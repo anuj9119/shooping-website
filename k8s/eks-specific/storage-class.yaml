@@ -1,0 +1,11 @@
+# EKS-specific storage class
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: social-media-gp2
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+  fsType: ext4
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer

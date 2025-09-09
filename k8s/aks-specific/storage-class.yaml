@@ -1,0 +1,11 @@
+# AKS-specific storage class
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: social-media-managed-premium
+provisioner: kubernetes.io/azure-disk
+parameters:
+  storageaccounttype: Premium_LRS
+  kind: Managed
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
