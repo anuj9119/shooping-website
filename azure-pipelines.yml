@@ -26,7 +26,7 @@ stages:
 - stage: Build_first_Dockerfile
   displayName: Build and push stage using Dockerfile1
   jobs:
-  - job: Build
+  - job: BuildFrontend
     displayName: Build for 1st dockerfile
     steps:
     - task: Docker@2
@@ -42,7 +42,7 @@ stages:
 - stage: Build_second_Dockerfile
   displayName: Build and push stage using Dockerfile2
   jobs:
-  - job: Build
+  - job: BuildBackend
     displayName: Build for 2nd Dockerfile
     steps:
     - task: Docker@2
