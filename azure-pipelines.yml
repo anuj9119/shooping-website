@@ -24,7 +24,7 @@ pool:
 
 stages:
 - stage: Build_first_Dockerfile
-  displayName: Build and push stage
+  displayName: Build and push stage using Dockerfile1
   jobs:
   - job: Build
     displayName: Build for 1st dockerfile
@@ -40,7 +40,7 @@ stages:
           $(tag)
 
 - stage: Build_second_Dockerfile
-  displayName: Build and push stage
+  displayName: Build and push stage using Dockerfile2
   jobs:
   - job: Build
     displayName: Build for 2nd Dockerfile
