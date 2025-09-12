@@ -9,14 +9,7 @@ resources:
 - repo: self
 
 variables:
-  # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '12232a7c-0ae8-4202-a49d-c5a3a1b18840'
-  imageRepository: 'shoopingfrontend'
-  imageRepository1: 'shoopingbackend'
-  containerRegistry: 'shoopingreg.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  dockerfilePath1: '$(Build.SourcesDirectory)/backend/Dockerfile'
-  tag: '$(Build.BuildId)'
+  - group: Shoppinggroup
 
   # Agent VM image name
 pool:
