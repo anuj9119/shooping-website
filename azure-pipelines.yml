@@ -12,8 +12,10 @@ variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '12232a7c-0ae8-4202-a49d-c5a3a1b18840'
   imageRepository: 'shoopingfrontend'
+  imageRepository1: 'shoopingbackend'
   containerRegistry: 'shoopingreg.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  dockerfilePath1: '$(Build.SourcesDirectory)/backend/Dockerfile'
   tag: '$(Build.BuildId)'
 
   # Agent VM image name
@@ -21,11 +23,11 @@ pool:
  name: 'shopping-agent'
 
 stages:
-- stage: Build
+- stage: Build_first_Dockerfile
   displayName: Build and push stage
   jobs:
   - job: Build
-    displayName: Build
+    displayName: Build for 1st dockerfile
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -37,9 +39,18 @@ stages:
         tags: |
           $(tag)
 
+- stage: Build_second_Dockerfile
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build for 2nd Dockerfile
+    steps:
     - task: Docker@2
+      displayName: Build and push an image to container registry
       inputs:
-        containerRegistry: 'shoopingreg'
-        repository: 'imageRepository'
-        command: 'buildAndPush'
-        Dockerfile: 'backend/Dockerfile'
+        command: buildAndPush
+        repository: $(imageRepository1)
+        dockerfile: $(dockerfilePath1)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
