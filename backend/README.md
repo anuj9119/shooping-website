@@ -15,7 +15,7 @@ A Node.js/Express backend service for the social media demo application.
 
 ## Quick Start
 
-### Prerequisites
+### Prerequisite
 - Node.js 18+
 - MySQL 8.0+
 
