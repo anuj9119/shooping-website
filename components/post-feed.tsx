@@ -13,8 +13,8 @@ const mockPosts = [
   {
     id: "1",
     author: {
-      name: "Alice Johnson",
-      handle: "@alicej",
+      name: "Anuj sharma",
+      handle: "@anuj",
       avatar: "female+developer+avatar",
     },
     content:
