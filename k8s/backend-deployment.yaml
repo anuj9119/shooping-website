@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: shoopingreg.azurecr.io/shoopingbackend:$(Build.BuildId)
+        image: shoopingreg.azurecr.io/shoopingbackend:latest
         ports:
         - containerPort: 5000
         env:
