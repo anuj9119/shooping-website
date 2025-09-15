@@ -42,7 +42,7 @@ stages:
   displayName: Build and push backend
   jobs:
   - job: BuildBackend
-    displayName: Build for 2nd Dockerfile
+    displayName: Build and push backend
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
