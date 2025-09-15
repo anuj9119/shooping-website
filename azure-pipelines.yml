@@ -49,20 +49,22 @@ stages:
           $(tag)
 
 - stage: creating_container
-  displayName: creating container from images and deploy on aks cluster
+  displayName: "Create containers from ACR images and deploy on AKS"
   jobs:
   - job: containercreating
-    displayName: container creating
+    displayName: "Deploy Frontend, Backend, and DB on AKS"
     steps:
-     - task: KubernetesManifest@1
-       inputs:
-         action: 'deploy'
-         connectionType: 'azureResourceManager'
-         azureSubscriptionConnection: 'Azure for Students(4f077f4d-a3e4-40bb-8c37-fb3e85c8e67d)'
-         azureResourceGroup: 'social-media-group'
-         kubernetesCluster: 'socialmedia_aks'
-         namespace: 'shopping'
-         manifests: |
-           k8s/backend-deployment.yaml
-           k8s/frontend-deployment.yaml
-           k8s/mysql-deployment.yaml'
+      - task: KubernetesManifest@1
+        displayName: "Deploy manifests to AKS"
+        inputs:
+          action: deploy
+          connectionType: azureResourceManager
+          azureSubscriptionConnection: 'Azure for Students(4f077f4d-a3e4-40bb-8c37-fb3e85c8e67d)'
+          azureResourceGroup: 'social-media-group'
+          kubernetesCluster: 'socialmedia_aks'
+          namespace: shopping
+          manifests: |
+            k8s/backend-deployment.yaml
+            k8s/frontend-deployment.yaml
+            k8s/mysql-deployment.yaml
+          rolloutStatusTimeout: 600
