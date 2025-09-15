@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shopping-backend
+  namespace: shopping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shopping-backend
+  template:
+    metadata:
+      labels:
+        app: shopping-backend
+    spec:
+      containers:
+      - name: backend
+        image: shoopingreg.azurecr.io/shoopingbackend:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DB_HOST
+          value: "mysql.shopping.svc.cluster.local"
+        - name: DB_USER
+          value: "root"
+        - name: DB_PASSWORD
+          value: "password"
+        - name: DB_NAME
+          value: "shoppingdb"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shopping-backend-svc
+  namespace: shopping
+spec:
+  type: ClusterIP
+  selector:
+    app: shopping-backend
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
