@@ -76,6 +76,6 @@ stages:
           rolloutStatusTimeout: 400
 
       - script: |
-          kubectl set image deployment/shopping-frontend shopping-frontend=shoopingreg.azurecr.io/frontend:$(Build.BuildId) -n shopping
-          kubectl set image deployment/shopping-backend shopping-backend=shoopingreg.azurecr.io/backend:$(Build.BuildId) -n shopping
+          kubectl set image deployment/shopping-frontend shopping-frontend=shoopingreg.azurecr.io/shoopingfrontend:$(Build.BuildId) -n shopping
+          kubectl set image deployment/shopping-backend shopping-backend=shoopingreg.azurecr.io/shoopingbackend:$(Build.BuildId) -n shopping
         displayName: "Update images with latest BuildId"
