@@ -73,9 +73,6 @@ stages:
             k8s/backend-deployment.yaml
             k8s/frontend-deployment.yaml
             k8s/mysql-deployment.yaml
-          rolloutStatusTimeout: 400
-
-      - script: |
-          kubectl set image deployment/shopping-frontend shopping-frontend=shoopingreg.azurecr.io/shoopingfrontend:$(Build.BuildId) -n shopping
-          kubectl set image deployment/shopping-backend shopping-backend=shoopingreg.azurecr.io/shoopingbackend:$(Build.BuildId) -n shopping
-        displayName: "Update images with latest BuildId"
+          containers: |
+            shoopingreg.azurecr.io/frontend:$(Build.BuildId)
+            shoopingreg.azurecr.io/backend:$(Build.BuildId)
