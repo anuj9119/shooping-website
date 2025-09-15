@@ -13,6 +13,10 @@ spec:
       labels:
         app: shopping-backend
     spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:latest
+        command: ['sh', '-c', 'until nc -z mysql 3306; do echo "waiting for mysql"; sleep 2; done;']
       containers:
       - name: backend
         image: shoopingreg.azurecr.io/shoopingbackend:latest
@@ -27,7 +31,11 @@ spec:
           value: "password"
         - name: DB_NAME
           value: "shoppingdb"
+
 ---
+# ---------------------------
+# Backend Service
+# ---------------------------
 apiVersion: v1
 kind: Service
 metadata:
