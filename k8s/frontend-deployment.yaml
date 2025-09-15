@@ -15,13 +15,13 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: shoopingreg.azurecr.io/shoopingfrontend:latest  # Replace with your CI/CD tag if needed
+        image: shoopingreg.azurecr.io/shoopingfrontend:latest
         ports:
-        - containerPort: 3000   
+        - containerPort: 3000
         env:
         - name: NEXT_PUBLIC_API_URL
-          value: "http://shopping-backend-svc.shopping.svc.cluster.local:5000"
-      
+          value: "http://shopping-backend-svc.shopping.svc.cluster.local:3001"
+          # ✅ Point frontend to backend service on correct port
 ---
 apiVersion: v1
 kind: Service
@@ -33,6 +33,6 @@ spec:
   selector:
     app: shopping-frontend
   ports:
-    - port: 80
-      targetPort: 3000   
-      protocol: TCP
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
