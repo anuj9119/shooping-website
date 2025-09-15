@@ -9,7 +9,11 @@ spec:
   resources:
     requests:
       storage: 5Gi
+
 ---
+# ---------------------------
+# MySQL Deployment
+# ---------------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,23 +32,30 @@ spec:
       containers:
       - name: mysql
         image: mysql:8
-        env:
-        - name: DB_USER
-          value: root
-        - name: MYSQL_ROOT_PASSWORD
-          value: password
-        - name: MYSQL_DATABASE
-          value: shoppingdb
         ports:
         - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password"
+        - name: MYSQL_DATABASE
+          value: "shoppingdb"
         volumeMounts:
         - name: mysql-data
           mountPath: /var/lib/mysql
+        readinessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 10
+          periodSeconds: 5
       volumes:
       - name: mysql-data
         persistentVolumeClaim:
           claimName: mysql-pvc
+
 ---
+# ---------------------------
+# MySQL Service
+# ---------------------------
 apiVersion: v1
 kind: Service
 metadata:
