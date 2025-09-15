@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: shoopingreg.azurecr.io/shoopingfrontend:latest
+        image: shoopingreg.azurecr.io/shoopingfrontend:$(Build.BuildId)
         ports:
         - containerPort: 80
 ---
