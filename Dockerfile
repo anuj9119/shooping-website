@@ -14,4 +14,5 @@ RUN npm run build
 
 # Run in production mode
 EXPOSE 3000
-CMD ["npm", "run", "start"]
+CMD ["node", ".next/standalone/server.js"]
+
