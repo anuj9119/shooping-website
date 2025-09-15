@@ -74,5 +74,5 @@ stages:
             k8s/frontend-deployment.yaml
             k8s/mysql-deployment.yaml
           containers: |
-            shoopingreg.azurecr.io/frontend:$(Build.BuildId)
-            shoopingreg.azurecr.io/backend:$(Build.BuildId)
+            shoopingreg.azurecr.io/shoopingfrontend:$(Build.BuildId)
+            shoopingreg.azurecr.io/shoopingbackend:$(Build.BuildId)
