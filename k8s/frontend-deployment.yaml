@@ -19,6 +19,7 @@ spec:
         ports:
         - containerPort: 80
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -26,9 +27,9 @@ metadata:
   namespace: shopping
 spec:
   type: LoadBalancer
-  selector:
-    app: shopping-frontend
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
+    - port: 80
+      targetPort: 3000  # or whatever port your container is exposing
+      protocol: TCP
+  selector:
+    app: shopping-frontend  # must match pod labels
