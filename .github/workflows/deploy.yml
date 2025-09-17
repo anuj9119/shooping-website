@@ -69,20 +69,20 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
+  
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+  
       - name: Set AKS Context
         uses: azure/aks-set-context@v3
         with:
           resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
           cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
-
+  
       - name: Deploy to AKS
-        uses: azure/k8s-deploy@v4
+        uses: Azure/k8s-deploy@v4
         with:
           namespace: shopping
           manifests: |
@@ -92,4 +92,4 @@ jobs:
           images: |
             ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.TAG }}
             ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.TAG }}
-          strategy: none  
+          strategy: none
