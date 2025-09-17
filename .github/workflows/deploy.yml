@@ -32,8 +32,8 @@ jobs:
       - name: Build & Push Frontend Image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile   # adjust path if needed
+          context: . 
+          file: ./Dockerfile
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.TAG }}
@@ -56,8 +56,8 @@ jobs:
       - name: Build & Push Backend Image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./backend/Dockerfile   # adjust path if needed
+          context: ./backend 
+          file: ./backend/Dockerfile
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.TAG }}
@@ -82,7 +82,7 @@ jobs:
           cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
 
       - name: Deploy to AKS
-        uses: Azure/k8s-deploy@v4
+        uses: azure/k8s-deploy@v4
         with:
           namespace: shopping
           manifests: |
@@ -92,4 +92,4 @@ jobs:
           images: |
             ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.TAG }}
             ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.TAG }}
-          strategy: none
+          strategy: none  
