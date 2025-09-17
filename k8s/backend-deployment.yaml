@@ -19,7 +19,7 @@ spec:
         command: ['sh', '-c', 'until nc -z mysql 3306; do echo "waiting for mysql"; sleep 2; done;']
       containers:
       - name: backend
-        image: shoopingreg.azurecr.io/shoopingbackend:latest
+        image: shoopingreg.azurecr.io/shoopingbackend:__TAG__
         ports:
         - containerPort: 5000
         env:
@@ -49,4 +49,5 @@ spec:
   ports:
   - protocol: TCP
     port: 3001        # ✅ Must match backend container port
+
     targetPort: 3001
