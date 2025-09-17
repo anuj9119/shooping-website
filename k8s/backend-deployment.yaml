@@ -19,9 +19,9 @@ spec:
         command: ['sh', '-c', 'until nc -z mysql 3306; do echo "waiting for mysql"; sleep 2; done;']
       containers:
       - name: backend
-        image: shoopingreg.azurecr.io/shoopingbackend:__TAG__
+        image: shoopingreg.azurecr.io/shoopingbackend:<IMAGE_TAG>
         ports:
-        - containerPort: 5000
+        - containerPort: 3001   # ✅ FIXED
         env:
         - name: DB_HOST
           value: "mysql.shopping.svc.cluster.local"
@@ -31,12 +31,7 @@ spec:
           value: "password"
         - name: DB_NAME
           value: "shoppingdb"
-
 ---
-# ---------------------------
-# Backend Service
-# ---------------------------
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -48,6 +43,5 @@ spec:
     app: shopping-backend
   ports:
   - protocol: TCP
-    port: 3001        # ✅ Must match backend container port
-
+    port: 3001
     targetPort: 3001
