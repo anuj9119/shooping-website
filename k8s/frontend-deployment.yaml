@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: shoopingreg.azurecr.io/shoopingfrontend:latest
+        image: shoopingreg.azurecr.io/shoopingfrontend:__TAG__
         ports:
         - containerPort: 3000
         env:
@@ -36,3 +36,4 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 3000
+
