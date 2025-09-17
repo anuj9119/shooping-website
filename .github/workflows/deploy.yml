@@ -5,92 +5,104 @@ on:
     branches:
       - main
     paths-ignore:
-      - 'azure-pipelines.yml'
-      - 'k8s/**'
+      - .github/workflows/*
+      - k8s/**
 
 env:
-  REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
-  FRONTEND_IMAGE: shoopingfrontend
-  BACKEND_IMAGE: shoopingbackend
-  TAG: ${{ github.run_number }}
+  RESOURCE_GROUP: social-media-group
+  AKS_CLUSTER: socialmedia_aks
+  ACR_NAME: shoopingreg
+  NAMESPACE: shopping
 
 jobs:
-  build-frontend:
-    name: Build & Push Frontend
+  build-and-push-frontend:
+    name: Build and Push Frontend Docker Image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Log in to ACR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
-          password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
-
-      - name: Build & Push Frontend Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.TAG }}
-          build-args: |
-            NEXT_PUBLIC_API_URL=http://shopping-backend-svc.shopping.svc.cluster.local:3001
-
-  build-backend:
-    name: Build & Push Backend
-    runs-on: ubuntu-latest
-    needs: build-frontend
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Log in to ACR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
-          password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
-
-      - name: Build & Push Backend Image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.TAG }}
-
-  deploy:
-    name: Deploy to AKS
-    runs-on: ubuntu-latest
-    needs: build-backend
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Azure Login
-        uses: azure/login@v2
+      - name: Log in to Azure
+        uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Set AKS Context
-        uses: azure/aks-set-context@v3
+      - name: Build and Push Frontend Image
+        uses: azure/docker-login@v1
         with:
-          resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
-          cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
+          login-server: ${{ env.ACR_NAME }}.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
-      - name: Deploy to AKS
-        uses: Azure/k8s-deploy@v4
+      - name: Build Frontend Docker Image
+        run: |
+          docker build \
+            --file frontend/Dockerfile \
+            --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+            -t ${{ env.ACR_NAME }}.azurecr.io/shoopingfrontend:${{ github.run_id }} \
+            frontend/
+          
+          docker push ${{ env.ACR_NAME }}.azurecr.io/shoopingfrontend:${{ github.run_id }}
+
+  build-and-push-backend:
+    name: Build and Push Backend Docker Image
+    runs-on: ubuntu-latest
+    needs: build-and-push-frontend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Log in to Azure
+        uses: azure/login@v1
         with:
-          namespace: shopping
-          manifests: |
-            k8s/backend-deployment.yaml
-            k8s/frontend-deployment.yaml
-            k8s/mysql-deployment.yaml
-          images: |
-            ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.TAG }}
-            ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.TAG }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and Push Backend Image
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.ACR_NAME }}.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build Backend Docker Image
+        run: |
+          docker build \
+            --file backend/Dockerfile \
+            --build-arg DATABASE_URL=${{ secrets.BACKEND_DB_URL }} \
+            -t ${{ env.ACR_NAME }}.azurecr.io/shoopingbackend:${{ github.run_id }} \
+            backend/
+          
+          docker push ${{ env.ACR_NAME }}.azurecr.io/shoopingbackend:${{ github.run_id }}
+
+  deploy-to-aks:
+    name: Deploy to AKS
+    runs-on: ubuntu-latest
+    needs:
+      - build-and-push-frontend
+      - build-and-push-backend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get AKS Credentials
+        run: |
+          az aks get-credentials \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --name ${{ env.AKS_CLUSTER }} \
+            --overwrite-existing
+
+      - name: Update image tags in manifests
+        run: |
+          sed -i "s|image: shoopingfrontend:.*|image: ${ACR_NAME}.azurecr.io/shoopingfrontend:${GITHUB_RUN_ID}|g" k8s/frontend-deployment.yaml
+          sed -i "s|image: shoopingbackend:.*|image: ${ACR_NAME}.azurecr.io/shoopingbackend:${GITHUB_RUN_ID}|g" k8s/backend-deployment.yaml
+
+      - name: Deploy Manifests to AKS
+        run: |
+          kubectl apply -f k8s/mysql-deployment.yaml -n ${{ env.NAMESPACE }}
+          kubectl apply -f k8s/backend-deployment.yaml -n ${{ env.NAMESPACE }}
+          kubectl apply -f k8s/frontend-deployment.yaml -n ${{ env.NAMESPACE }}
