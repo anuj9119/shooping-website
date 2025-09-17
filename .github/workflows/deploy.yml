@@ -91,5 +91,4 @@ jobs:
             k8s/mysql-deployment.yaml
           images: |
             ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.TAG }}
-            ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.TAG }}
-          strategy: none
+            ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.TAG }
