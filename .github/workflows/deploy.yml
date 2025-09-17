@@ -32,7 +32,7 @@ jobs:
       - name: Build & Push Frontend Image
         uses: docker/build-push-action@v5
         with:
-          context: . 
+          context: .
           file: ./Dockerfile
           push: true
           tags: |
@@ -56,7 +56,7 @@ jobs:
       - name: Build & Push Backend Image
         uses: docker/build-push-action@v5
         with:
-          context: ./backend 
+          context: ./backend
           file: ./backend/Dockerfile
           push: true
           tags: |
@@ -69,18 +69,18 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-  
+
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-  
+
       - name: Set AKS Context
         uses: azure/aks-set-context@v3
         with:
           resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
           cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
-  
+
       - name: Deploy to AKS
         uses: Azure/k8s-deploy@v4
         with:
@@ -91,4 +91,4 @@ jobs:
             k8s/mysql-deployment.yaml
           images: |
             ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.TAG }}
-            ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.TAG }
+            ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.TAG }}
