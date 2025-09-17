@@ -37,6 +37,8 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.TAG }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=http://shopping-backend-svc.shopping.svc.cluster.local:3001
 
   build-backend:
     name: Build & Push Backend
